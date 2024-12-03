@@ -1,14 +1,12 @@
 name: Docker Image CI
 
 on:
+  workflow_dispatch:
+
   push:
     branches: [ "main" ]
-    path:
-      - 'html/**'
   pull_request:
     branches: [ "main" ]
-    path:
-      - 'html/**'
 
 jobs:
 
@@ -17,10 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+     - name: generate image tag
+        run: |
+          echo "IMAGE_TAG=$(date +%s)" >> $GITHUB_ENV
+    
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: |
-        cd html
         docker build . --file Dockerfile --tag ghcr.io/feketemiklosbenjamin/html-feketemiklos:0.2
         docker login ghcr.io -u feketemiklosbenjamin -p ${{secrets.GHCR_TOKEN}}
         docker push ghcr.io/feketemiklosbenjamin/html-feketemiklos:0.2
