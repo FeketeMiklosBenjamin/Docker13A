@@ -27,3 +27,12 @@ jobs:
         docker login ghcr.io -u feketemiklosbenjamin -p ${{secrets.GHCR_TOKEN}}
         docker push ghcr.io/feketemiklosbenjamin/html-feketemiklos:$IMAGE_TAG
         docker push ghcr.io/feketemiklosbenjamin/html-feketemiklos:latest
+
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'Test-azure'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_c14c71b549b54523bc1502c8d8f6322f }}
+        images: 'ghcr.io/feketemiklosbenjamin/html-feketemiklos:${{ env.IMAGE_TAG }}'
